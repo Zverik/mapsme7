@@ -1,0 +1,7 @@
+*.pyc
+*.swp
+*.sql
+*.db
+venv/
+config_local.py
+*.km*

@@ -1,0 +1,16 @@
+<table cellspacing="0" cellpadding="0" id="puzzle">
+  {% for row in range(puzzle.rows) %}
+  <tr>
+    {% for col in range(puzzle.columns) %}
+    <td>
+      {% set pp = row * puzzle.columns + col %}
+      {% if pp in puzzle.pieces %}
+      <img src="{{ url_for('static', filename='p'~(pp+1)~'.jpg') }}">
+      {% else %}
+      <img src="{{ url_for('static', filename='placeholder.jpg') }}">
+      {% endif %}
+    </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>

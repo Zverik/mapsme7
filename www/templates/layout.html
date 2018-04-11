@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Семилетие MAPS.ME</title>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        {% block header %}{% endblock %}
+    </head>
+    <body>
+      {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+          <div class="flash">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </body>
+</html>

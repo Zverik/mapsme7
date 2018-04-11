@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>Задание {{ step }} из {{ total_steps }}</h1>
+<div id="task">{{ task | safe }}</div>
+{% if image %}
+<div id="image"><img src="{{ url_for('static', filename=image) }}"></div>
+{% endif %}
+{% if desc %}
+<div id="task">{{ desc }}</div>
+{% endif %}
+<form action="{{ url_for('submit') }}" method="post">
+  Код: <input type="text" size="4" name="code" value="">
+  <input type="submit" value="Отправить">
+</form>
+{% endblock %}
