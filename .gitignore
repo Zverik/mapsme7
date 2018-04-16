@@ -2,6 +2,8 @@
 *.swp
 *.sql
 *.db
+quest.yml
+tasks.txt
 venv/
 config_local.py
 *.km*

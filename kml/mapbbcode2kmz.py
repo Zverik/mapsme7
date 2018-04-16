@@ -4,6 +4,7 @@ import sys
 import os
 import zipfile
 import random
+import codecs
 from urllib.request import urlopen
 
 
@@ -25,21 +26,24 @@ with urlopen('http://share.mapbbcode.org/{}?format=geojson'.format(mapbbcode)) a
     if resp.getcode() != 200:
         print('Error requesting a geojson: {}'.format(resp.getcode()))
         sys.exit(2)
-    data = json.load(resp)['features']
+    data = json.load(codecs.getreader('utf-8')(resp))['features']
 
 images = {x[:x.find('.')]: x for x in os.listdir('.') if x.endswith('.jpg')}
-images = {'5881': '5881.jpg'}
 
+seen = set()
 marks = {}
 for f in data:
     coords = f['geometry']['coordinates']
     title = f['properties'].get('title')
     if not title:
         code = str(random.randint(1000, 9999))
+        while code in seen:
+            code = str(random.randint(1000, 9999))
     elif title[0] == 's':
         code = title[1:]
     else:
         code = title
+    seen.add(code)
 
     if code in tasks:
         desc = tasks[code]
@@ -78,7 +82,9 @@ kml = '''<?xml version="1.0" encoding="UTF-8"?>
 </kml>
 '''.format('\n'.join([marks[code] for code in sorted(marks.keys(), reverse=True)]))
 
+with open('mapsme7.kml', 'w') as f:
+    f.write(kml)
 # with zipfile.ZipFile('mapsme7.kmz', 'w', zipfile.ZIP_DEFLATED) as z:
-with zipfile.ZipFile('mapsme7.kmz', 'w') as z:
-    with z.open('mapsme7.kml', 'w') as f:
-        f.write(kml.encode('utf-8'))
+# with zipfile.ZipFile('mapsme7.kmz', 'w') as z:
+#    with z.open('mapsme7.kml', 'U') as f:
+#        f.write(kml.encode('utf-8'))

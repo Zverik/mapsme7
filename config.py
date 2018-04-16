@@ -6,6 +6,7 @@ DEBUG = False
 DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'mapsme7.db')
 # DATABASE_URI = 'postgresql://localhost/cf_audit'
 
+OVER = False
 ADMINS = set([290271])  # Zverik
 
 # Override these (and anything else) in config_local.py

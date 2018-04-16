@@ -9,6 +9,7 @@ import random
 import yaml
 import os
 import codecs
+import datetime
 
 oauth = OAuth()
 openstreetmap = oauth.remote_app(
@@ -41,11 +42,12 @@ def choose_path():
              .group_by(User.path)
              .having(User.step == fn.MAX(User.step))
              .tuples())
-    paths = {p: 0 for p in range(len(g.quest))}
+    paths = {p: 0 for p in range(len(g.quest['paths']))}
     paths.update({t[0]: t[1] for t in query})
     smin = min(paths.values())
     pmin = [p for p in paths if paths[p] == smin]
-    return random.choice(pmin)
+    path = random.choice(pmin)
+    return path
 
 
 def get_user():
@@ -77,13 +79,15 @@ def load_quest():
 @app.route('/')
 def front():
     user = get_user()
+    if config.OVER:
+        return render_template('over.html', participated=user and user.step >= 2)
+
     pquery = User.select(User.path).where(User.step == len(g.quest['steps'])+1).tuples()
     puzzle = {
         'rows': 3,
         'columns': 4,
         'pieces': set([q[0] for q in pquery]),
     }
-
     if user:
         if user.step == len(g.quest['steps'])+1:
             return render_template('done.html', piece=user.path, puzzle=puzzle,
@@ -93,6 +97,7 @@ def front():
         desc = None if len(task) <= 2 else task[2]
         return render_template('task.html', step=user.step, admin=is_admin(user),
                                task=g.quest['steps'][user.step-1], image=img, desc=desc,
+                               path=user.path,
                                total_steps=len(g.quest['steps']), puzzle=puzzle)
     return render_template('index.html', puzzle=puzzle, admin=is_admin(user))
 
@@ -100,9 +105,12 @@ def front():
 @app.route('/submit', methods=['POST'])
 def submit():
     user = get_user()
+    if not user:
+        return redirect(url_for('login'))
     code = request.form['code']
     if code.isdigit() and int(code) == g.quest['paths'][user.path][user.step-1][0]:
         user.step += 1
+        user.updated = datetime.datetime.now()
         user.save()
     else:
         flash(u'Не угадали, извините.')
@@ -135,7 +143,7 @@ def oauth():
     )
     user_details = openstreetmap.get('user/details').data
     uid = int(user_details[0].get('id'))
-    name = int(user_details[0].get('display_name'))
+    name = user_details[0].get('display_name')
     session['osm_uid'] = uid
     try:
         User.get(User.uid == uid)
