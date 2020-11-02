@@ -1,5 +1,5 @@
 from peewee import (
-    fn, Model, IntegerField, CharField
+    fn, Model, IntegerField, CharField, DateTimeField
 )
 from playhouse.migrate import (
     migrate as peewee_migrate,
@@ -10,6 +10,7 @@ from playhouse.migrate import (
 from playhouse.db_url import connect
 import config
 import logging
+import datetime
 
 database = connect(config.DATABASE_URI)
 if 'mysql' in config.DATABASE_URI:
@@ -28,6 +29,7 @@ class User(BaseModel):
     name = CharField(max_length=250)
     path = IntegerField()
     step = IntegerField(default=1)
+    updated = DateTimeField(default=datetime.datetime.now)
 
 
 # ------------------------------ MIGRATION ------------------------------

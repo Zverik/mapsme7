@@ -2,14 +2,17 @@
 {% block content %}
 <h1>Задание {{ step }} из {{ total_steps }}</h1>
 <div id="task">{{ task | safe }}</div>
-{% if image %}
+{% if step == 4 %}
+<div id="image"><img src="http://osmz.ru/mapsme7/mapsme7-{{ path }}.jpg"></div>
+{% elif image %}
 <div id="image"><img src="{{ url_for('static', filename=image) }}"></div>
 {% endif %}
 {% if desc %}
-<div id="task">{{ desc }}</div>
+<div id="desc">{{ desc }}</div>
 {% endif %}
 <form action="{{ url_for('submit') }}" method="post">
-  Код: <input type="text" size="4" name="code" value="">
+  Код: <input type="text" size="4" name="code" id="code" value="">
   <input type="submit" value="Отправить">
 </form>
+<script>document.getElementById('code').focus();</script>
 {% endblock %}

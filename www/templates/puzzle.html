@@ -2,12 +2,12 @@
   {% for row in range(puzzle.rows) %}
   <tr>
     {% for col in range(puzzle.columns) %}
+    {% set pp = row * puzzle.columns + col %}
     <td>
-      {% set pp = row * puzzle.columns + col %}
       {% if pp in puzzle.pieces %}
-      <img src="{{ url_for('static', filename='p'~(pp+1)~'.jpg') }}">
+      <img src="http://osmz.ru/mapsme7/mapsme7-{{ pp }}.jpg">
       {% else %}
-      <img src="{{ url_for('static', filename='placeholder.jpg') }}">
+      <img src="http://osmz.ru/mapsme7/mapsme7-no.png">
       {% endif %}
     </td>
     {% endfor %}
